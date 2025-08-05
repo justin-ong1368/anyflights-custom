@@ -4,11 +4,12 @@
 \alias{anyflights}
 \title{Query nycflights13-Like Air Travel Data}
 \usage{
-anyflights(station, year, month = 1:12, dir = NULL)
+anyflights(station, year, month = 1:12, dir = NULL, arrivals = FALSE)
 }
 \arguments{
-\item{station}{A character vector giving the origin US airports of interest
-(as the FAA LID airport code).}
+\item{station}{A character vector giving the US airports of interest
+(as the FAA LID airport code). Flights are matched by departure airport by
+default; set \code{arrivals = TRUE} to match by arrival airport instead.}
 
 \item{year}{A numeric giving the year of interest. This argument is currently
 not vectorized, as dataset sizes for single years are significantly large.
@@ -19,6 +20,10 @@ March in the following year.}
 
 \item{dir}{An optional character string giving the directory
 to save datasets in. By default, datasets will not be saved to file.}
+
+\item{arrivals}{Logical; when \code{FALSE} (default) flights are filtered by
+departure airport(s) given in \code{station}. When \code{TRUE}, flights are
+filtered by arrival airport(s).}
 }
 \value{
 A list of dataframes (and, optionally, a directory of datasets) 
@@ -36,9 +41,9 @@ The \code{anyflights()} function is a wrapper around the following functions:
   \item \code{\link{get_airlines}}: Grab data to translate between two letter 
   carrier codes and names
   \item \code{\link{get_airports}}: Grab data on airport names and locations
-  \item \code{\link{get_flights}}: Grab data on all flights that departed 
-  given US airports in a given year and month
-  \item \code{\link{get_planes}}: Grab construction information about each 
+  \item \code{\link{get_flights}}: Grab data on flights that departed or
+  arrived at given US airports in a given year and month
+  \item \code{\link{get_planes}}: Grab construction information about each
   plane
   \item \code{\link{get_weather}}: Grab hourly meterological data for a given 
   airport in a given year and month

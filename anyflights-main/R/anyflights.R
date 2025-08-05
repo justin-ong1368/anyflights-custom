@@ -10,8 +10,8 @@
 #'   \item \code{\link{get_airlines}}: Grab data to translate between two letter 
 #'   carrier codes and names
 #'   \item \code{\link{get_airports}}: Grab data on airport names and locations
-#'   \item \code{\link{get_flights}}: Grab data on all flights that departed 
-#'   given US airports in a given year and month
+#'   \item \code{\link{get_flights}}: Grab data on flights that departed or
+#'   arrived at given US airports in a given year and month
 #'   \item \code{\link{get_planes}}: Grab construction information about each 
 #'   plane
 #'   \item \code{\link{get_weather}}: Grab hourly meterological data for a given 
@@ -25,8 +25,9 @@
 #' codes for all supported airports. See 
 #' ?\code{\link{get_flights}} for more details on implementation.
 #' 
-#' @param station A character vector giving the origin US airports of interest
-#'  (as the FAA LID airport code).
+#' @param station A character vector giving the US airports of interest
+#'  (as the FAA LID airport code). Flights are matched by departure airport by
+#'  default; set `arrivals = TRUE` to match by arrival airport instead.
 #'  
 #' @param year A numeric giving the year of interest. This argument is currently
 #' not vectorized, as dataset sizes for single years are significantly large.
@@ -38,7 +39,11 @@
 #' @param dir An optional character string giving the directory
 #' to save datasets in. By default, datasets will not be saved to file.
 #' 
-#' @return A list of dataframes (and, optionally, a directory of datasets) 
+#' @param arrivals Logical; when `FALSE` (default) flights are filtered by
+#'   departure airport(s) given in `station`. When `TRUE`, flights are filtered by
+#'   arrival airport(s).
+#'
+#' @return A list of dataframes (and, optionally, a directory of datasets)
 #' similar to those found in the \code{nycflights13} data package.
 #' 
 #' @examples
@@ -62,7 +67,8 @@
 #' of this function to a data-only package.
 #' 
 #' @export
-anyflights <- function(station, year, month = 1:12, dir = NULL) {
+anyflights <- function(station, year, month = 1:12, dir = NULL,
+                       arrivals = FALSE) {
   
   # create a function, unique to this call to anyflights,
   # that returns the difference in time from when the function was called
@@ -81,7 +87,8 @@ anyflights <- function(station, year, month = 1:12, dir = NULL) {
   }
   
   write_tick(pb, "  Processing Arguments...")
-  flights <- get_flights(station, year, month, dir, 
+  flights <- get_flights(station, year, month, dir,
+                         arrivals = arrivals,
                          pb = pb, diff_fn = diff_from_start)
   write_message(pb, "Finished Downloading Flights Data", diff_from_start)
   
