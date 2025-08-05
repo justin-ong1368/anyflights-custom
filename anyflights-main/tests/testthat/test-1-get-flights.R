@@ -4,8 +4,17 @@ test_that("standard get_flights (PDX, June 2018)", {
   skip_on_cran()
   skip_if_offline()
   skip_on_os("windows")
-  
+
   flights_ <- get_flights("PDX", 2018, 6)
+})
+
+test_that("get_flights can filter by arrival airport", {
+  skip_on_cran()
+  skip_if_offline()
+  skip_on_os("windows")
+
+  flights_arr <- get_flights("PDX", 2018, 6, arrivals = TRUE)
+  expect_true(all(flights_arr$dest == "PDX"))
 })
 
 test_that("standard get_flights (NYC, February 2013)", {

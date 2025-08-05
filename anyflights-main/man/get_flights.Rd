@@ -8,11 +8,12 @@ RITA, Bureau of transportation statistics,
  \url{https://www.bts.gov}
 }
 \usage{
-get_flights(station, year, month = 1:12, dir = NULL, ...)
+get_flights(station, year, month = 1:12, dir = NULL, arrivals = FALSE, ...)
 }
 \arguments{
-\item{station}{A character vector giving the origin US airports of interest
-(as the FAA LID airport code).}
+\item{station}{A character vector giving the US airports of interest
+(as the FAA LID airport code). Flights are matched by departure airport by
+default; set \code{arrivals = TRUE} to match by arrival airport instead.}
 
 \item{year}{A numeric giving the year of interest. This argument is currently
 not vectorized, as dataset sizes for single years are significantly large.
@@ -23,6 +24,10 @@ March in the following year.}
 
 \item{dir}{An optional character string giving the directory
 to save datasets in. By default, datasets will not be saved to file.}
+
+\item{arrivals}{Logical; when \code{FALSE} (default) flights are filtered by
+departure airport(s) given in \code{station}. When \code{TRUE}, flights are
+filtered by arrival airport(s).}
 
 \item{...}{Currently only used internally.}
 }
@@ -61,8 +66,10 @@ may take several minutes to download relevant data.
 This function currently downloads data for \emph{all} stations for each month
 supplied, and \emph{then} filters out data for relevant stations. Thus, 
 the recommended approach to download data for many airports is to supply 
-a vector of airport codes to the \code{station} argument rather than 
-iterating over many calls to \code{get_flights()}.
+a vector of airport codes to the \code{station} argument rather than
+iterating over many calls to \code{get_flights()}. By default, flights are
+filtered by departure airport; setting \code{arrivals = TRUE} filters by
+arrival airport instead.
 }
 \note{
 If you are repeatedly getting a timeout error when downloading flights,

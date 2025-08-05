@@ -18,7 +18,7 @@ check_arguments <- function(station = NULL, year = NULL,
     }    
     
     if (!all(station %in% get_airports()$faa)) {
-      stop_glue("Couldn't find at least one of the provided origin airports ",
+      stop_glue("Couldn't find at least one of the provided airports ",
                 "{list(station)}. Please consider using the get_airports() function ",
                 "to locate the desired FAA LID code!")
     }
@@ -236,34 +236,41 @@ download_month <- function(year, month, dir, flight_exdir, pb, diff_fn) {
                 diff_fn)
 }
 
-get_flight_data <- function(path, station) {
-  
-  # read in the data
-  suppressWarnings(
-    suppressMessages(vroom::vroom(path,
-                     progress = FALSE,
-                     show_col_types = FALSE))
-    ) %>%
-    # select relevant columns
+get_flight_data <- function(path, station, arrivals = FALSE) {
+
+  # read the raw file and keep only the columns we need
+  flights <- suppressWarnings(
+    suppressMessages(
+      vroom::vroom(path, progress = FALSE, show_col_types = FALSE)
+    )
+  ) %>%
     dplyr::select(
-      year = Year, 
-      month = Month, 
+      year = Year,
+      month = Month,
       day = DayofMonth,
-      dep_time = DepTime, 
-      sched_dep_time = CRSDepTime, 
+      dep_time = DepTime,
+      sched_dep_time = CRSDepTime,
       dep_delay = DepDelay,
-      arr_time = ArrTime, 
-      sched_arr_time = CRSArrTime, 
+      arr_time = ArrTime,
+      sched_arr_time = CRSArrTime,
       arr_delay = ArrDelay,
-      carrier = Reporting_Airline,  
-      flight = Flight_Number_Reporting_Airline, 
-      tailnum = Tail_Number, 
-      origin = Origin, 
-      dest = Dest, 
-      air_time = AirTime, 
-      distance = Distance) %>%
-    # only keep the relevant rows
-    dplyr::filter(origin %in% station) %>%
+      carrier = Reporting_Airline,
+      flight = Flight_Number_Reporting_Airline,
+      tailnum = Tail_Number,
+      origin = Origin,
+      dest = Dest,
+      air_time = AirTime,
+      distance = Distance
+    )
+
+  # filter by either origin or destination depending on arrivals flag
+  if (arrivals) {
+    flights <- dplyr::filter(flights, dest %in% station)
+  } else {
+    flights <- dplyr::filter(flights, origin %in% station)
+  }
+
+  flights %>%
     dplyr::mutate(
       # convert column classes
       dep_time = as.integer(dep_time),
@@ -276,7 +283,8 @@ get_flight_data <- function(path, station) {
       # cleanup NAs in the tailnum column
       tailnum = dplyr::case_when(
         tailnum == "" ~ NA_character_,
-        TRUE ~ tailnum),
+        TRUE ~ tailnum
+      ),
       # convert column types to match the original data
       year = as.integer(year),
       month = as.integer(month),
@@ -284,7 +292,7 @@ get_flight_data <- function(path, station) {
       arr_time = as.integer(arr_time),
       sched_arr_time = as.integer(sched_arr_time),
       flight = as.integer(flight)
-      )
+    )
 }
 
 # given a year and month, this function returns the URL to query for the data
