@@ -7,13 +7,18 @@
 #' may take several minutes to download relevant data.
 #' 
 #' This function currently downloads data for \emph{all} stations for each month
-#' supplied, and \emph{then} filters out data for relevant stations. Thus, 
-#' the recommended approach to download data for many airports is to supply 
-#' a vector of airport codes to the \code{station} argument rather than 
-#' iterating over many calls to \code{get_flights()}.
+#' supplied, and \emph{then} filters out data for relevant stations. Thus,
+#' the recommended approach to download data for many airports is to supply
+#' a vector of airport codes to the \code{station} argument rather than
+#' iterating over many calls to \code{get_flights()}. By default, flights are
+#' filtered by departure airport; setting \code{arrivals = TRUE} filters by
+#' arrival airport instead.
 #' 
-#' @inheritParams anyflights 
-#' 
+#' @inheritParams anyflights
+#'
+#' @param arrivals Logical; when `FALSE` (default) flights are filtered by
+#'   departure airport(s) given in `station`. When `TRUE`, flights are filtered
+#'   by arrival airport(s).
 #' @param ... Currently only used internally.
 #' 
 #' @return A data frame with ~1k-500k rows and 19 variables:
@@ -70,7 +75,8 @@
 #' to a data-only package.
 #'
 #' @export
-get_flights <- function(station, year, month = 1:12, dir = NULL, ...) {
+get_flights <- function(station, year, month = 1:12, dir = NULL,
+                        arrivals = FALSE, ...) {
   
   if (!hasArg(pb)) {
     # if get_flights isn't supplied a progress bar from the anyflights
@@ -90,9 +96,9 @@ get_flights <- function(station, year, month = 1:12, dir = NULL, ...) {
   }
   
   # check user inputs
-  check_arguments(station = station, 
-                  year = year, 
-                  month = month, 
+  check_arguments(station = station,
+                  year = year,
+                  month = month,
                   dir = dir,
                   context = "flights")
   
@@ -119,7 +125,8 @@ get_flights <- function(station, year, month = 1:12, dir = NULL, ...) {
   # load in the flights data for each month, tidy it, and rowbind it
   flights <- purrr::map(dir(flight_exdir, full.names = TRUE),
                         get_flight_data,
-                        station = station) %>%
+                        station = station,
+                        arrivals = arrivals) %>%
     dplyr::bind_rows() %>%
     dplyr::arrange(year, month, day, dep_time)
   
