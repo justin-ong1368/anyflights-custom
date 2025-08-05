@@ -34,9 +34,13 @@
 #' March in the following year.
 #' 
 #' @param month A numeric giving the month(s) of interest.
-#' 
+#'
 #' @param dir An optional character string giving the directory
 #' to save datasets in. By default, datasets will not be saved to file.
+#'
+#' @param type Either "departure" (the default) to return flights departing
+#'   from the supplied stations or "arrival" to return flights arriving at the
+#'   supplied stations.
 #' 
 #' @return A list of dataframes (and, optionally, a directory of datasets) 
 #' similar to those found in the \code{nycflights13} data package.
@@ -62,7 +66,10 @@
 #' of this function to a data-only package.
 #' 
 #' @export
-anyflights <- function(station, year, month = 1:12, dir = NULL) {
+anyflights <- function(station, year, month = 1:12, dir = NULL,
+                       type = c("departure", "arrival")) {
+
+  type <- match.arg(type)
   
   # create a function, unique to this call to anyflights,
   # that returns the difference in time from when the function was called
@@ -81,7 +88,7 @@ anyflights <- function(station, year, month = 1:12, dir = NULL) {
   }
   
   write_tick(pb, "  Processing Arguments...")
-  flights <- get_flights(station, year, month, dir, 
+  flights <- get_flights(station, year, month, dir, type = type,
                          pb = pb, diff_fn = diff_from_start)
   write_message(pb, "Finished Downloading Flights Data", diff_from_start)
   
