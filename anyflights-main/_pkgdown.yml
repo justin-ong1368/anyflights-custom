@@ -1,6 +1,0 @@
-url: https://simonpcouch.github.io/anyflights/
-template:
-  bootstrap: 5
-
-development:
-  mode: auto
