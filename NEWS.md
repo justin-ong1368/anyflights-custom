@@ -1,5 +1,8 @@
 # anyflights (development version)
 
+* Add `type` argument to `get_flights()` and `anyflights()` to retrieve
+  flights by arrival or departure airport.
+
 # anyflights 0.3.5
 
 * Include `tz = "GMT"` argument to `ISOdatetime()` so that weather output isn't 

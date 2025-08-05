@@ -4,7 +4,7 @@
 \alias{anyflights}
 \title{Query nycflights13-Like Air Travel Data}
 \usage{
-anyflights(station, year, month = 1:12, dir = NULL)
+anyflights(station, year, month = 1:12, dir = NULL, type = c("departure", "arrival"))
 }
 \arguments{
 \item{station}{A character vector giving the origin US airports of interest
@@ -19,6 +19,10 @@ March in the following year.}
 
 \item{dir}{An optional character string giving the directory
 to save datasets in. By default, datasets will not be saved to file.}
+
+\item{type}{Either "departure" (the default) to return flights departing from
+the supplied stations or "arrival" to return flights arriving at the supplied
+stations.}
 }
 \value{
 A list of dataframes (and, optionally, a directory of datasets) 

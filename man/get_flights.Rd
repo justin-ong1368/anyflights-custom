@@ -8,7 +8,7 @@ RITA, Bureau of transportation statistics,
  \url{https://www.bts.gov}
 }
 \usage{
-get_flights(station, year, month = 1:12, dir = NULL, ...)
+get_flights(station, year, month = 1:12, dir = NULL, type = c("departure", "arrival"), ...)
 }
 \arguments{
 \item{station}{A character vector giving the origin US airports of interest
@@ -23,6 +23,10 @@ March in the following year.}
 
 \item{dir}{An optional character string giving the directory
 to save datasets in. By default, datasets will not be saved to file.}
+
+\item{type}{Either "departure" (the default) to return flights departing from
+the supplied stations or "arrival" to return flights arriving at the supplied
+stations.}
 
 \item{...}{Currently only used internally.}
 }
@@ -77,6 +81,9 @@ code \code{options(timeout = timeout_value_in_seconds)} in your console.
 
 # ...or the original nycflights13 flights dataset
 \donttest{\dontrun{get_flights(c("JFK", "LGA", "EWR"), 2013)}}
+
+# flights arriving at the NYC airports in February 2013
+\donttest{\dontrun{get_flights(c("JFK", "LGA", "EWR"), 2013, 2, type = "arrival")}}
 
 # use the dir argument to indicate the folder to 
 # save the data in \code{dir} as "flights.rda"

@@ -12,8 +12,11 @@
 #' a vector of airport codes to the \code{station} argument rather than 
 #' iterating over many calls to \code{get_flights()}.
 #' 
-#' @inheritParams anyflights 
-#' 
+#' @inheritParams anyflights
+#'
+#' @param type Either "departure" (the default) to return flights departing
+#'   from the supplied stations or "arrival" to return flights arriving at the
+#'   supplied stations.
 #' @param ... Currently only used internally.
 #' 
 #' @return A data frame with ~1k-500k rows and 19 variables:
@@ -55,6 +58,10 @@
 #' 
 #' # ...or the original nycflights13 flights dataset
 #' \donttest{\dontrun{get_flights(c("JFK", "LGA", "EWR"), 2013)}}
+#'
+#' # flights arriving at the NYC airports in February 2013
+#' \donttest{\dontrun{get_flights(c("JFK", "LGA", "EWR"), 2013, 2,
+#'                                type = "arrival")}}
 #' 
 #' # use the dir argument to indicate the folder to 
 #' # save the data in \code{dir} as "flights.rda"
@@ -70,7 +77,10 @@
 #' to a data-only package.
 #'
 #' @export
-get_flights <- function(station, year, month = 1:12, dir = NULL, ...) {
+get_flights <- function(station, year, month = 1:12, dir = NULL,
+                        type = c("departure", "arrival"), ...) {
+
+  type <- match.arg(type)
   
   if (!hasArg(pb)) {
     # if get_flights isn't supplied a progress bar from the anyflights
@@ -119,7 +129,8 @@ get_flights <- function(station, year, month = 1:12, dir = NULL, ...) {
   # load in the flights data for each month, tidy it, and rowbind it
   flights <- purrr::map(dir(flight_exdir, full.names = TRUE),
                         get_flight_data,
-                        station = station) %>%
+                        station = station,
+                        type = type) %>%
     dplyr::bind_rows() %>%
     dplyr::arrange(year, month, day, dep_time)
   

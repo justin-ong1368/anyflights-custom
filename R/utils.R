@@ -236,7 +236,7 @@ download_month <- function(year, month, dir, flight_exdir, pb, diff_fn) {
                 diff_fn)
 }
 
-get_flight_data <- function(path, station) {
+get_flight_data <- function(path, station, type) {
   
   # read in the data
   suppressWarnings(
@@ -263,7 +263,15 @@ get_flight_data <- function(path, station) {
       air_time = AirTime, 
       distance = Distance) %>%
     # only keep the relevant rows
-    dplyr::filter(origin %in% station) %>%
+    dplyr::filter(
+      {
+        if (type == "departure") {
+          origin %in% station
+        } else {
+          dest %in% station
+        }
+      }
+    ) %>%
     dplyr::mutate(
       # convert column classes
       dep_time = as.integer(dep_time),
